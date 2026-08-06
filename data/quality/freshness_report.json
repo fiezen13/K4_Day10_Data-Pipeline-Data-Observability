@@ -1,0 +1,15 @@
+{
+  "latest_published": "2026-08-01",
+  "oldest_published": "2026-02-12",
+  "stale_rows": 0,
+  "stale_rate": 0.0,
+  "total_rows": 24,
+  "missing_published": 0,
+  "missing_age_days": 0,
+  "negative_age_rows": 0,
+  "mean_age_days": 76.58,
+  "max_age_days": 175,
+  "freshness_threshold_days": 180,
+  "is_fresh": true,
+  "report_path": "/home/fiores/Documents/hien-selflearning/AI_in_Action_Labs/K4_Day10_Data-Pipeline-Data-Observability/data/quality/freshness_report.json"
+}

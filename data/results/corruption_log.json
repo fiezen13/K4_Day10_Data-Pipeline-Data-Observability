@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-06T08:43:13.764864+00:00",
+  "input_rows": 24,
+  "output_rows": 23,
+  "row_delta": -1,
+  "input_dataframe_mutated": false,
+  "operations": [
+    {
+      "type": "drop_latest_record",
+      "paper_id": "10.1111/exsy.70341",
+      "field": null,
+      "old_value": {
+        "published": "2026-08-01",
+        "title": "Hi\u2010 RAG : A Hierarchical Retrieval\u2010Augmented Generation Framework for Scalable and Generalisable Tool Selection in Large Language Model Agents"
+      },
+      "new_value": null
+    },
+    {
+      "type": "drop_latest_record",
+      "paper_id": "10.2118/234689-pa",
+      "field": null,
+      "old_value": {
+        "published": "2026-08-01",
+        "title": "SafeRAG: A Large-Language-Model-Based Multistage Retrieval-Augmented Framework for Oil and Gas Safety Report Generation"
+      },
+      "new_value": null
+    },
+    {
+      "type": "blank_summary",
+      "paper_id": "10.1007/s10278-026-02086-9",
+      "field": "summary",
+      "old_length": 1172,
+      "new_length": 0
+    },
+    {
+      "type": "blank_summary",
+      "paper_id": "10.1093/sleep/zsag091.0346",
+      "field": "summary",
+      "old_length": 2491,
+      "new_length": 0
+    },
+    {
+      "type": "inject_summary_noise",
+      "paper_id": "10.20944/preprints202602.0996.v1",
+      "field": "summary",
+      "old_length": 1713,
+      "new_length": 1765,
+      "marker": "[CORRUPTED_NOISE]"
+    },
+    {
+      "type": "truncate_title",
+      "paper_id": "10.20944/preprints202604.0339.v1",
+      "field": "title",
+      "old_value": "Retrieval-Augmented Large Language Model Agents for Automated Scientific Literature Review Generation",
+      "new_value": "Retrieval-Augmented"
+    },
+    {
+      "type": "make_publication_stale",
+      "paper_id": "10.70121/001c.158711",
+      "field": "published",
+      "old_value": "2026-03-15",
+      "new_value": "2024-08-06",
+      "stale_after_days": 730
+    },
+    {
+      "type": "duplicate_record",
+      "paper_id": "10.1007/s10278-026-02086-9",
+      "field": "paper_id",
+      "source_row_index": "2",
+      "duplicate_count_added": 1
+    }
+  ],
+  "affected_paper_ids": [
+    "10.1007/s10278-026-02086-9",
+    "10.1093/sleep/zsag091.0346",
+    "10.1111/exsy.70341",
+    "10.20944/preprints202602.0996.v1",
+    "10.20944/preprints202604.0339.v1",
+    "10.2118/234689-pa",
+    "10.70121/001c.158711"
+  ],
+  "repair_evidence_requirement": {
+    "source": "data/raw/crossref_records.json",
+    "method": "load_raw_records(...) followed by build_clean_dataframe(...)",
+    "prohibited": "Do not repair by editing the corrupted dataframe, test set, answers, or metrics."
+  },
+  "repair_evidence": {
+    "raw_snapshot_path": "data/raw/crossref_records.json",
+    "raw_snapshot_exists": true,
+    "repair_method": "load_raw_records(raw snapshot) -> build_clean_dataframe",
+    "freshness_threshold_days": 180,
+    "baseline": {
+      "rows": 24,
+      "unique_paper_ids": 24,
+      "duplicate_paper_id_rows": 0,
+      "blank_summary_rows": 0,
+      "stale_rows": 0
+    },
+    "repaired": {
+      "rows": 24,
+      "unique_paper_ids": 24,
+      "duplicate_paper_id_rows": 0,
+      "blank_summary_rows": 0,
+      "stale_rows": 0
+    },
+    "missing_paper_ids_vs_baseline": [],
+    "unexpected_paper_ids_vs_baseline": [],
+    "same_row_count_as_baseline": true,
+    "same_paper_id_set_as_baseline": true,
+    "field_mismatch_counts_vs_baseline": {
+      "title": 0,
+      "summary": 0,
+      "published": 0
+    },
+    "same_core_fields_as_baseline": true,
+    "repaired_is_clean": true,
+    "repaired_is_close_to_baseline": true,
+    "baseline_clean_csv_path": "data/clean/papers_clean.csv",
+    "baseline_clean_csv_sha256_before": "7a0a1900fa39fb2b89887b86e680c65f3e80d24f2e9bf45ea9fd1fae7c77c6e3",
+    "baseline_clean_json_path": "data/clean/papers_clean.json",
+    "baseline_clean_json_sha256_before": "72120ec7183fc9a290690ce54a235f811784459d4574f41afe7d0e303df15744",
+    "raw_snapshot_sha256": "86000e13cdae8c3d921a788c4cb9756b331c6dbccb7b6db8b9dafe9477a3dc04",
+    "frozen_test_set_path": "data/eval/test_set.json",
+    "frozen_test_set_sha256_before": "2b95a8f960286a61461e11f014ba07042ec2d464f510a6e49d85c9a5af786889",
+    "baseline_clean_csv_sha256": "176e1b45ae9c8c9359b6a10ca20929d801b3e3b721a7bda03223a8d17a164300",
+    "baseline_clean_json_sha256": "a8980c9943c02605c4c34a2096fe7833355c061a7b45fde8898399ce06ab7051",
+    "frozen_test_set_sha256": "63ce6ba7a6846c6a0da73b5f243b2761fc2c19b0935b709132a32328bdedfa62",
+    "path_style": "repo-relative"
+  }
+}
