@@ -1,0 +1,43 @@
+{
+  "report_name": "corrupted",
+  "generated_at": "2026-08-06T09:57:41.737233+00:00",
+  "row_count": 24,
+  "checks": [
+    {
+      "name": "row_count_positive",
+      "passed": true,
+      "detail": "row_count=24"
+    },
+    {
+      "name": "paper_id_not_null",
+      "passed": true,
+      "detail": "null_or_empty_count=0"
+    },
+    {
+      "name": "paper_id_unique",
+      "passed": false,
+      "detail": "duplicate_count=2"
+    },
+    {
+      "name": "title_not_null",
+      "passed": true,
+      "detail": "null_or_empty_count=0"
+    },
+    {
+      "name": "summary_min_length",
+      "passed": false,
+      "detail": "rows_below_20_chars=5"
+    },
+    {
+      "name": "text_for_embedding_not_empty",
+      "passed": true,
+      "detail": "empty_count=0"
+    },
+    {
+      "name": "freshness_within_threshold",
+      "passed": true,
+      "detail": "stale_count=5, stale_rate=20.83%, threshold_days=180"
+    }
+  ],
+  "success": false
+}

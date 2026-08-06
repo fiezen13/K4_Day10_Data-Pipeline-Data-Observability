@@ -31,6 +31,8 @@ class Paths:
     quality_dir: Path
     gx_dir: Path
     freshness_report: Path
+    corrupted_freshness_report: Path
+    repaired_freshness_report: Path
     baseline_report: Path
     corruption_log: Path
     corrupted_metrics: Path
@@ -86,8 +88,8 @@ def load_settings(project_dir: Path | None = None) -> Settings:
         clean_json=data_dir / "clean" / "papers_clean.json",
         chroma_dir=data_dir / "chroma",
         embeddings_json=data_dir / "embeddings" / "papers_embeddings.json",
-        corrupted_clean_csv=data_dir / "clean" / "papers_clean_corrupted.csv",
-        corrupted_clean_json=data_dir / "clean" / "papers_clean_corrupted.json",
+        corrupted_clean_csv=data_dir / "clean" / "papers_corrupted.csv",
+        corrupted_clean_json=data_dir / "clean" / "papers_corrupted.json",
         corrupted_embeddings_json=data_dir / "embeddings" / "papers_embeddings_corrupted.json",
         repaired_clean_csv=data_dir / "clean" / "papers_clean_repaired.csv",
         repaired_clean_json=data_dir / "clean" / "papers_clean_repaired.json",
@@ -99,6 +101,8 @@ def load_settings(project_dir: Path | None = None) -> Settings:
         quality_dir=data_dir / "quality",
         gx_dir=data_dir / "quality" / "gx",
         freshness_report=data_dir / "quality" / "freshness_report.json",
+        corrupted_freshness_report=data_dir / "quality" / "freshness_report_corrupted.json",
+        repaired_freshness_report=data_dir / "quality" / "freshness_report_repaired.json",
         baseline_report=data_dir / "reports" / "phase1_report.md",
         corruption_log=data_dir / "results" / "corruption_log.json",
         corrupted_metrics=data_dir / "results" / "corrupted_metrics.json",
