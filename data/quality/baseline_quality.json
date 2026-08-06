@@ -1,0 +1,113 @@
+{
+  "report_name": "baseline_quality",
+  "success": true,
+  "total_rows": 24,
+  "failed_checks": [],
+  "metrics": {
+    "null_paper_ids": 0,
+    "null_paper_id_rate": 0.0,
+    "duplicate_paper_ids": 0,
+    "duplicate_paper_id_rate": 0.0,
+    "null_titles": 0,
+    "null_title_rate": 0.0,
+    "empty_summaries": 0,
+    "empty_summary_rate": 0.0,
+    "non_empty_short_summaries": 0,
+    "short_summaries": 0,
+    "short_summary_rate": 0.0,
+    "empty_embedding_text": 0,
+    "empty_embedding_text_rate": 0.0,
+    "missing_age_days": 0,
+    "negative_age_rows": 0,
+    "stale_rows": 0,
+    "stale_rate": 0.0,
+    "freshness_threshold_days": 180
+  },
+  "checks": [
+    {
+      "name": "row_count_positive",
+      "success": true,
+      "observed": 24,
+      "expectation": "Dataset must contain at least 1 row."
+    },
+    {
+      "name": "paper_id_not_null",
+      "success": true,
+      "observed": {
+        "null_count": 0,
+        "total_rows": 24
+      },
+      "expectation": "Every row must have a non-empty paper_id."
+    },
+    {
+      "name": "paper_id_unique",
+      "success": true,
+      "observed": {
+        "duplicate_count": 0,
+        "total_rows": 24
+      },
+      "expectation": "paper_id values must be unique."
+    },
+    {
+      "name": "title_not_null",
+      "success": true,
+      "observed": {
+        "null_count": 0,
+        "total_rows": 24
+      },
+      "expectation": "Every row must have a non-empty title."
+    },
+    {
+      "name": "summary_min_length",
+      "success": true,
+      "observed": {
+        "empty_summaries": 0,
+        "non_empty_short_summaries": 0,
+        "short_summaries_total": 0,
+        "min_chars": 100,
+        "total_rows": 24
+      },
+      "expectation": "Every summary must have at least 100 characters."
+    },
+    {
+      "name": "text_for_embedding_not_empty",
+      "success": true,
+      "observed": {
+        "empty_count": 0,
+        "total_rows": 24
+      },
+      "expectation": "Every row must have non-empty text_for_embedding."
+    },
+    {
+      "name": "age_days_present",
+      "success": true,
+      "observed": {
+        "missing_count": 0,
+        "total_rows": 24
+      },
+      "expectation": "Every row must have age_days for freshness monitoring."
+    },
+    {
+      "name": "age_days_non_negative",
+      "success": true,
+      "observed": {
+        "negative_age_rows": 0,
+        "total_rows": 24
+      },
+      "expectation": "age_days must be greater than or equal to 0."
+    },
+    {
+      "name": "freshness_within_threshold",
+      "success": true,
+      "observed": {
+        "stale_rows": 0,
+        "stale_rate": 0.0,
+        "threshold_days": 180,
+        "max_age_days": 175,
+        "mean_age_days": 76.58
+      },
+      "expectation": "Lab contract: all rows should have age_days <= 180."
+    }
+  ],
+  "report_path": "/home/fiores/Documents/hien-selflearning/AI_in_Action_Labs/K4_Day10_Data-Pipeline-Data-Observability/data/quality/baseline_quality.json"
+}

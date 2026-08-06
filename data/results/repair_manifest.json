@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "title": "Repair manifest \u2014 rebuilt from trusted raw snapshot",
+  "repair_method": "load_raw_records(raw snapshot) -> build_clean_dataframe",
+  "prohibited": "Do not repair by editing the corrupted dataframe, test set, answers, or metrics.",
+  "source_raw_snapshot": "data/raw/crossref_records.json",
+  "raw_snapshot_sha256": "86000e13cdae8c3d921a788c4cb9756b331c6dbccb7b6db8b9dafe9477a3dc04",
+  "baseline_comparison": {
+    "baseline_rows": 24,
+    "repaired_rows": 24,
+    "same_row_count_as_baseline": true,
+    "same_paper_id_set_as_baseline": true,
+    "same_core_fields_as_baseline": true,
+    "field_mismatch_counts_vs_baseline": {
+      "title": 0,
+      "summary": 0,
+      "published": 0
+    },
+    "missing_paper_ids_vs_baseline": [],
+    "unexpected_paper_ids_vs_baseline": [],
+    "repaired_is_clean": true,
+    "repaired_is_close_to_baseline": true
+  },
+  "quality_snapshots": {
+    "baseline": {
+      "rows": 24,
+      "unique_paper_ids": 24,
+      "duplicate_paper_id_rows": 0,
+      "blank_summary_rows": 0,
+      "stale_rows": 0
+    },
+    "repaired": {
+      "rows": 24,
+      "unique_paper_ids": 24,
+      "duplicate_paper_id_rows": 0,
+      "blank_summary_rows": 0,
+      "stale_rows": 0
+    }
+  },
+  "artifacts": {
+    "repaired_csv": "data/clean/papers_clean_repaired.csv",
+    "repaired_json": "data/clean/papers_clean_repaired.json",
+    "corruption_manifest": "data/results/corruption_log.json",
+    "baseline_clean_json": "data/clean/papers_clean.json",
+    "raw_records": "data/raw/crossref_records.json"
+  }
+}

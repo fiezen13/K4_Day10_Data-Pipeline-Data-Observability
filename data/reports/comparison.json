@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "states": ["baseline", "corrupted", "repaired"],
+  "note": "RAG evaluation metrics are pending until Integration runs phase1/corruption_flow evaluate steps.",
+  "quality": {
+    "baseline": {
+      "success": true,
+      "total_rows": 24,
+      "failed_checks": [],
+      "duplicate_paper_ids": 0,
+      "short_summaries": 0,
+      "stale_rows": 0,
+      "stale_rate": 0.0
+    },
+    "corrupted": {
+      "success": false,
+      "total_rows": 23,
+      "failed_checks": [
+        "paper_id_unique",
+        "summary_min_length",
+        "freshness_within_threshold"
+      ],
+      "duplicate_paper_ids": 1,
+      "short_summaries": 3,
+      "stale_rows": 1,
+      "stale_rate": 0.0435
+    },
+    "repaired": {
+      "success": true,
+      "total_rows": 24,
+      "failed_checks": [],
+      "duplicate_paper_ids": 0,
+      "short_summaries": 0,
+      "stale_rows": 0,
+      "stale_rate": 0.0
+    }
+  },
+  "freshness": {
+    "baseline": {
+      "is_fresh": true,
+      "stale_rows": 0,
+      "mean_age_days": 76.58,
+      "max_age_days": 175
+    },
+    "corrupted": {
+      "is_fresh": false,
+      "stale_rows": 1,
+      "oldest_published": "2024-08-06"
+    },
+    "repaired": {
+      "is_fresh": true,
+      "stale_rows": 0
+    }
+  },
+  "evaluation_metrics": {
+    "baseline": null,
+    "corrupted": null,
+    "repaired": null
+  },
+  "artifacts": {
+    "corruption_manifest": "data/results/corruption_log.json",
+    "repair_manifest": "data/results/repair_manifest.json",
+    "markdown_report": "data/reports/corruption_report.md",
+    "human_readable_report": "data/reports/corruption_comparison.md"
+  }
+}

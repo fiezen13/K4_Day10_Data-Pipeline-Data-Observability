@@ -1,0 +1,15 @@
+{
+  "latest_published": "2026-07-13",
+  "oldest_published": "2024-08-06",
+  "stale_rows": 1,
+  "stale_rate": 0.0435,
+  "total_rows": 23,
+  "missing_published": 0,
+  "missing_age_days": 0,
+  "negative_age_rows": 0,
+  "mean_age_days": 106.0,
+  "max_age_days": 730,
+  "freshness_threshold_days": 180,
+  "is_fresh": false,
+  "report_path": "/home/fiores/Documents/hien-selflearning/AI_in_Action_Labs/K4_Day10_Data-Pipeline-Data-Observability/data/quality/corrupted_freshness.json"
+}
