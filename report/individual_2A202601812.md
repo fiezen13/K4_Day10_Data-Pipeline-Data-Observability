@@ -31,7 +31,22 @@
 | Sinh báo cáo markdown baseline: nguồn dữ liệu, bảng metrics, bảng quality check, freshness | `generate_phase1_report` | `data/reports/phase1_report.md` | Mở file, đối chiếu số liệu với `data/results/baseline_metrics.json` |
 | Sinh báo cáo so sánh 3 trạng thái: bảng metric có cột Delta, bảng quality corrupted/repaired, bảng freshness | `generate_corruption_report` | `data/reports/corruption_report.md` | Mở file, đối chiếu cột Delta = `giá_trị_khác - giá_trị_baseline` |
 
-Output cụ thể: `data/quality/corrupted_quality.json` ghi nhận đúng 2 check FAIL (`paper_id_unique` với `duplicate_count=2`, `summary_min_length` với `rows_below_100_chars=5`) — hai check này bắt trúng đúng loại corruption mà Thành viên 4 đã áp dụng (duplicate rows và blank/noise summary), chứng minh bộ quality check của tôi nhạy với lỗi thật chứ không phải luôn PASS máy móc.
+Output cụ thể: `data/quality/corrupted_quality.json` ghi nhận đúng 2 check FAIL (`paper_id_unique` với `duplicate_count=2`, `summary_min_length` với `rows_below_20_chars=5`) — hai check này bắt trúng đúng loại corruption mà Thành viên 4 đã áp dụng (duplicate rows và blank/noise summary), chứng minh bộ quality check của tôi nhạy với lỗi thật chứ không phải luôn PASS máy móc.
+
+### Quality / freshness trên cả 3 trạng thái dữ liệu
+
+Cùng một bộ check (`run_data_quality_checks`, `build_freshness_report`) được chạy trên baseline, corrupted và repaired:
+
+| Tín hiệu | Baseline | Corrupted | Repaired | Artifact |
+| --- | --- | --- | --- | --- |
+| Quality overall | PASS (`success=true`, 7/7) | FAIL (`success=false`, 5/7; FAIL: `paper_id_unique`, `summary_min_length`) | PASS (`success=true`, 7/7) | `data/quality/{baseline,corrupted,repaired}_quality.json` |
+| Row count | 24 | 24 | 24 | cùng các file quality trên |
+| `paper_id_unique` | PASS (`duplicate_count=0`) | FAIL (`duplicate_count=2`) | PASS (`duplicate_count=0`) | cùng các file quality trên |
+| `summary_min_length` (`MIN_SUMMARY_CHARS=20`) | PASS (`rows_below_20_chars=0`) | FAIL (`rows_below_20_chars=5`) | PASS (`rows_below_20_chars=0`) | cùng các file quality trên |
+| `freshness_within_threshold` | PASS (`stale_rate=0%`) | PASS (`stale_count=5`, `stale_rate=20.83%` — dưới ngưỡng 50%) | PASS (`stale_rate=0%`) | cùng các file quality trên |
+| Freshness `is_fresh` | `true` | `true` (dù stale tăng) | `true` | `data/quality/freshness_report.json`, `freshness_report_corrupted.json`, `freshness_report_repaired.json` |
+| `stale_rows` / `stale_rate` | 0 / 0% | 5/24 / 20.83% | 0 / 0% | cùng các file freshness trên |
+| Latest / oldest published | 2026-08-01 / 2026-02-12 | 2026-08-01 / 2021-08-01 | 2026-08-01 / 2026-02-12 | cùng các file freshness trên |
 
 ## 4. Giải thích phần kỹ thuật đã thực hiện
 
@@ -78,12 +93,12 @@ uv run python script/run_corruption_flow.py
 
 ## 6. Một lỗi hoặc blocker đã xử lý
 
-- **Triệu chứng/lỗi nguyên văn:** Ở lần thiết kế đầu tiên, `MIN_SUMMARY_CHARS` trong `quality.py` được đặt là `20`, nhưng `cleaning.py` (Thành viên 2) dùng ngưỡng lọc summary tối thiểu là `100` ký tự khi build dataframe — hai ngưỡng lệch nhau khiến check `summary_min_length` gần như không bao giờ FAIL kể cả khi dữ liệu corrupted có summary rất ngắn, vì bất kỳ summary nào qua được bước cleaning (≥100 ký tự) chắc chắn cũng qua được ngưỡng quality check (≥20 ký tự) — check trở nên vô nghĩa với dữ liệu chưa bị corrupt tới mức xóa trắng.
-- **Lệnh hoặc bước tái hiện:** Chạy `run_corruption_flow.py` với kịch bản "noise injection" (thêm ký tự rác vào cuối summary thay vì xóa trắng) — summary vẫn dài hơn 20 ký tự nên check cũ không bắt được.
-- **Nguyên nhân gốc:** Hai module độc lập (`cleaning.py` và `quality.py`) định nghĩa ngưỡng độ dài summary ở hai nơi khác nhau mà không đồng bộ, dẫn đến quality check chỉ có ý nghĩa bắt lỗi "xóa trắng hoàn toàn" chứ không phát hiện được summary bị làm ngắn đi một phần.
-- **Cách xử lý:** Đồng bộ `MIN_SUMMARY_CHARS` trong `quality.py` lên `100` để khớp đúng ngưỡng `MIN_SUMMARY_LENGTH` trong `cleaning.py`, đảm bảo quality check phản ánh đúng cùng một tiêu chuẩn "hợp lệ" được dùng khi ingest dữ liệu.
-- **Cách xác minh sau khi sửa:** Sau khi corruption áp dụng blank summary trên 3 bản ghi (`summary = ""`), `corrupted_quality.json` báo `summary_min_length: FAIL, rows_below_100_chars=5` — con số 5 (không phải 3) cho thấy check còn bắt được cả những bản ghi bị noise injection làm rớt xuống dưới ngưỡng một cách gián tiếp, đúng như kỳ vọng của một check nhất quán với rule cleaning.
-- **Điều học được:** Khi nhiều module độc lập cùng thao tác trên một trường dữ liệu (ở đây là `summary`), các ngưỡng/rule liên quan cần được đối chiếu chéo giữa các thành viên thay vì mỗi người tự chọn một con số hợp lý riêng — nếu không, quality check có thể "PASS giả" dù logic bên trong đã đúng cú pháp.
+- **Triệu chứng/lỗi nguyên văn:** Khi đối chiếu `quality.py` với `cleaning.py`, phát hiện lệch ngưỡng: quality dùng `MIN_SUMMARY_CHARS = 20`, trong khi cleaning lọc summary tối thiểu **100** ký tự. Đồng thời, lần đầu đọc freshness corrupted dễ hiểu nhầm là “không bắt được stale-date” vì `is_fresh` vẫn `true`.
+- **Lệnh hoặc bước tái hiện:** Mở `src/observability/quality.py` (hằng `MIN_SUMMARY_CHARS`), `data/quality/corrupted_quality.json` (`rows_below_20_chars=5`) và `data/quality/freshness_report_corrupted.json` (`stale_rate≈20.83%`, `is_fresh=true`).
+- **Nguyên nhân gốc:** (1) Hai module định nghĩa ngưỡng độ dài `summary` ở hai nơi khác nhau mà chưa thống nhất. (2) Nhầm giữa **tín hiệu thô** (`stale_rows`/`stale_rate`) và **cổng pass/fail** (`is_fresh` / `freshness_within_threshold` với ngưỡng 50%).
+- **Cách xử lý:** Giữ `MIN_SUMMARY_CHARS = 20` đúng như code đã chạy end-to-end trên `main` (không sửa tay số liệu sau khi đã có artifact). Với blank summary (`summary = ""`), check 20 ký tự vẫn FAIL đúng. Ghi rõ trong report cả `stale_rate` lẫn `is_fresh`. Việc đồng bộ ngưỡng quality lên 100 (khớp cleaning) để bắt tốt hơn summary bị cắt ngắn/noise nhưng vẫn >20 ký tự được xếp vào hướng cải thiện.
+- **Cách xác minh sau khi sửa:** `corrupted_quality.json` báo `summary_min_length: FAIL, rows_below_20_chars=5` và `paper_id_unique: FAIL, duplicate_count=2`; freshness corrupted có `stale_rows=5` dù `is_fresh=true`. Sau repair, cả quality và freshness trở lại khớp baseline.
+- **Điều học được:** Ngưỡng giữa cleaning và quality cần đối chiếu chéo sớm; báo cáo observability phải trình bày cả số liệu thô và trạng thái pass/fail, nếu không sẽ mất bằng chứng cho corruption nhẹ hơn ngưỡng cảnh báo.
 
 ## 7. Hiểu biết về luồng end-to-end
 
@@ -106,7 +121,7 @@ uv run python script/run_corruption_flow.py
 
 ### Kết luận từ số liệu
 
-1. **Duplicate rows + blank/noise summary** (do Thành viên 4 tạo ra) → `run_data_quality_checks` phát hiện qua `paper_id_unique` (`duplicate_count=2`) và `summary_min_length` (`rows_below_100_chars=5`) chuyển từ PASS sang FAIL (`data/quality/corrupted_quality.json`) → các check FAIL này trùng khớp thời điểm với `mean_token_f1` giảm mạnh nhất trong 4 agent metric (`data/results/corrupted_metrics.json`), cho thấy quality signal của tôi là chỉ báo sớm đáng tin cậy cho sự suy giảm chất lượng answer.
+1. **Duplicate rows + blank/noise summary** (do Thành viên 4 tạo ra) → `run_data_quality_checks` phát hiện qua `paper_id_unique` (`duplicate_count=2`) và `summary_min_length` (`rows_below_20_chars=5`) chuyển từ PASS sang FAIL (`data/quality/corrupted_quality.json`) → các check FAIL này trùng khớp thời điểm với `mean_token_f1` giảm mạnh nhất trong 4 agent metric (`data/results/corrupted_metrics.json`), cho thấy quality signal của tôi là chỉ báo sớm đáng tin cậy cho sự suy giảm chất lượng answer.
 2. **Repair action** (Thành viên 5 build lại từ raw) → `run_data_quality_checks` và `build_freshness_report` trên dataframe đã repair trả về 7/7 PASS và `stale_rate=0%` (`data/quality/repaired_quality.json`, `freshness_report_repaired.json`) — đúng bằng kết quả baseline, xác nhận repair không chỉ khôi phục answer quality mà còn khôi phục đúng cấu trúc dữ liệu ở tầng quality gate.
 
 Corruption ảnh hưởng rõ nhất tới quality signal: **duplicate rows**, vì đây là check nhị phân (PASS/FAIL tức thì khi `duplicate_count > 0`), khác với `freshness_within_threshold` vốn cần vượt ngưỡng 50% mới đổi trạng thái. Điều này khiến `paper_id_unique` là check nhạy nhất trong bộ 7 check của tôi đối với các kịch bản corruption dạng rời rạc (thêm/xóa bản ghi).
@@ -121,7 +136,8 @@ Corruption ảnh hưởng rõ nhất tới quality signal: **duplicate rows**, v
 
 ### Nếu có thêm thời gian
 
-Sẽ thêm một quality check đo "text similarity drift" — so sánh `text_for_embedding` giữa hai lần chạy (baseline vs corrupted) bằng cosine similarity trên embedding, để phát hiện sớm các kịch bản corruption dạng nhiễu nội dung (như noise injection) mà các check hiện tại (dựa trên độ dài/null) không bắt được trực tiếp; đo lường bằng cách so sánh số bản ghi có similarity dưới một ngưỡng với số bản ghi thực sự bị noise injection trong `corruption_log.json`.
+1. Đồng bộ `MIN_SUMMARY_CHARS` trong `quality.py` lên **100** để khớp ngưỡng cleaning, nhằm bắt tốt hơn summary bị cắt ngắn/noise nhưng vẫn dài hơn 20 ký tự.
+2. Thêm quality check đo "text similarity drift" — so sánh `text_for_embedding` giữa baseline vs corrupted bằng cosine similarity trên embedding, để phát hiện noise injection mà check độ dài/null không bắt được trực tiếp.
 
 ## 10. Cam kết của thành viên
 
